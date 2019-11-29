@@ -138,7 +138,7 @@ def main(exercise_labelled,workout):
     )
     
     model.fit(X_train, y_train)
-    #print(model.score(X_valid, y_valid))
+    print(model.score(X_valid, y_valid))
     
     time_spent_action = 2 #This is the number of seconds we look at each increment of the workout
     workout_actions = get_workout_actions(time_spent_action,workout_df,model)
