@@ -22,7 +22,7 @@ import time
 
 def get_workout_actions(seconds,df,model):
     workout_actions = []
-    elapsed_time = df["time"].iloc[-1] - 1
+    elapsed_time = df["time"].iloc[-1] 
     low = 1
     high = seconds
     
@@ -41,7 +41,25 @@ def get_workout_actions(seconds,df,model):
         workout_actions.append(prediction)
         
     return  workout_actions
-        
+
+def print_timeline(workout_actions,time_spent_action,elapsed_time):
+    prev_action = workout_actions[0]
+    prev_action_time = 0
+    current_action_time = 0
+    del workout_actions[0]
+    print("Workout Timeline:")
+    
+    for action in workout_actions:
+        if(prev_action == action):
+            current_action_time += time_spent_action
+        else:
+            print("- Time ["+ str(prev_action_time) + "s-", str(current_action_time) + "s]", " = " + prev_action)
+            prev_action_time = current_action_time
+            prev_action = action
+            
+    print("- Time [" + str(prev_action_time) + "s-", str(elapsed_time) +"s]", " = " + action)
+    
+    
     
 def get_action(df,model):
     t_max_avg = df.nlargest(5, 'aT (m/s^2)') # may want to take more values
@@ -89,7 +107,7 @@ def print_workout_stats(workout_actions,elapsed_time):
         
     print("Workout Overview:")
     workout_time = time.strftime('%H:%M:%S', time.gmtime(elapsed_time))
-    print(" - Time: " , workout_time + "\n - Calories Burned: ", total_cal_burned)
+    print(" - Time: " , workout_time + "\n - Calories Burned: ", total_cal_burned,"\n")
     print("Workout Breakdown:")
     print(workout_breakdown)
     plt.title("Workout Breakdown")
@@ -98,9 +116,9 @@ def print_workout_stats(workout_actions,elapsed_time):
     plt.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
     #plt.show()
     
-def main(exercise_labelled,guess_exercise):
+def main(exercise_labelled,workout):
     exercise_labelled_df = pd.read_csv(exercise_labelled)
-    guess_exercise_df = pd.read_csv(guess_exercise)
+    workout_df = pd.read_csv(workout)
     
     #plt.plot(guess_exercise_df['time'], guess_exercise_df['aT (m/s^2)'], 'b.', alpha=0.5)
     #loess_smoothed = lowess(guess_exercise_df['aT (m/s^2)'],guess_exercise_df['time'], frac=0.2)
@@ -122,12 +140,14 @@ def main(exercise_labelled,guess_exercise):
     model.fit(X_train, y_train)
     #print(model.score(X_valid, y_valid))
     
-    workout_actions = get_workout_actions(3,guess_exercise_df,model)
-    elapsed_time = guess_exercise_df["time"].iloc[-1] - 1
+    time_spent_action = 2 #This is the number of seconds we look at each increment of the workout
+    workout_actions = get_workout_actions(time_spent_action,workout_df,model)
+    elapsed_time = workout_df["time"].iloc[-1] 
     print_workout_stats(workout_actions,elapsed_time)
+    print_timeline(workout_actions,time_spent_action,elapsed_time)
     
 
 if __name__=='__main__':
     exercise_labelled = "exercise-model-data.csv"
-    guess_exercise = sys.argv[1]
-    main(exercise_labelled,guess_exercise)
+    workout = sys.argv[1]
+    main(exercise_labelled,workout)
