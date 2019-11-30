@@ -33,6 +33,7 @@ def get_workout_actions(seconds,df,model):
         #print(subset_df.tail(1).time)
         t_max_avg = subset_df.nlargest(5, 'aT (m/s^2)') # may want to take more values
         t_max_avg = t_max_avg['aT (m/s^2)'].mean()
+        #print("time[" + str(round(low,2)) +" - " + str(round(high,2)) + "]", round(t_max_avg,3))
         #print("t_max_avg=",t_max_avg)
         prediction = get_action(subset_df,model)
         #print("Action predicted is: ", prediction,"\n")
@@ -110,19 +111,23 @@ def print_workout_stats(workout_actions,elapsed_time):
     print(" - Time: " , workout_time + "\n - Calories Burned: ", total_cal_burned,"\n")
     print("Workout Breakdown:")
     print(workout_breakdown)
-    plt.title("Workout Breakdown")
-    plt.pie(workout.values(),  labels=workout.keys(), autopct='%1.1f%%',
-        shadow=True, startangle=90)
-    plt.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
+    
+    #plt.title("Workout Breakdown")
+    #plt.pie(workout.values(),  labels=workout.keys(), autopct='%1.1f%%',
+    #    shadow=True, startangle=90)
+    #plt.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
     #plt.show()
     
 def main(exercise_labelled,workout):
     exercise_labelled_df = pd.read_csv(exercise_labelled)
     workout_df = pd.read_csv(workout)
     
-    #plt.plot(guess_exercise_df['time'], guess_exercise_df['aT (m/s^2)'], 'b.', alpha=0.5)
-    #loess_smoothed = lowess(guess_exercise_df['aT (m/s^2)'],guess_exercise_df['time'], frac=0.2)
-    #plt.plot(guess_exercise_df['time'], loess_smoothed[:, 1], 'r-')
+    #plt.title("Workout 8")
+    plt.ylabel("aT (m/s^2)")
+    plt.xlabel("time (s)")
+    plt.plot(workout_df['time'], workout_df['aT (m/s^2)'], 'b.', alpha=0.5)
+    loess_smoothed = lowess(workout_df['aT (m/s^2)'],workout_df['time'], frac=0.2)
+    plt.plot(workout_df['time'], loess_smoothed[:, 1], 'r-')
     
     cols = list(exercise_labelled_df.columns.values)
     del cols[0]
@@ -149,5 +154,6 @@ def main(exercise_labelled,workout):
 
 if __name__=='__main__':
     exercise_labelled = "exercise-model-data.csv"
-    workout = sys.argv[1]
+    workout = "test-data/workout3.csv" #TODO change back to sys[1]
+    #TODO add sys[2] for weight
     main(exercise_labelled,workout)

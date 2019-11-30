@@ -30,7 +30,7 @@ def create_exercise_data(inputFiles,exercises_df):
 def main(inputFiles):
     exercises_df = pd.DataFrame(columns=['action', 't_max_avg'])
     exercises_df = create_exercise_data(inputFiles,exercises_df)
-    #print(exercises_df.groupby(['action']).agg([('average','mean')]),"\n")
+    print(exercises_df.groupby(['action']).agg([('average','mean')]),"\n")
     #print(exercises_df.groupby(['action']).agg([('median','median')]))
     print("Files Generated!")
     exercises_df.to_csv("exercise-model-data.csv", index=False)     
