@@ -28,20 +28,44 @@ OUTPUT_TEMPLATE = (
     'SVC: {svc:.3f} \n'
 )
 
+#used the following guide to test different models
+#https://scikit-learn.org/stable/tutorial/machine_learning_map/index.html
 def main():
-    data = pd.read_csv(sys.argv[1])
+    mixedExercises1 = pd.read_csv("annotatedData/annotatedData-1.csv")
     
-    #used the following guide to test different models
-    #https://scikit-learn.org/stable/tutorial/machine_learning_map/index.html
+    #window to look back at
+    #50 samples is about 1/2 a second looking at the data
+    LOOKBACK_WINDOW_LENGTH = 2
     
-    #data = data[data['Action']!= 'NONE']
+
+     
+    #combine data sources
+    data = mixedExercises1
     
-    #print(data)
-    #TODO: get more data, model may be overfiting
+        
+    
+    #TODO: get more data, model may be overfitting
     #TODO: put in last n records as features as we are classifying motion not single records
-    #X = data[['time', 'ax (m/s^2)', 'ay (m/s^2)','az (m/s^2)','aT (m/s^2)']].values
-    X = data[['ax (m/s^2)', 'ay (m/s^2)','az (m/s^2)','aT (m/s^2)']].values
-    y = data['Action'].values
+    #TODO: make history data be based off of LOOKBACK_WINDOW_LENGTH 
+    Xdf = data[['ax (m/s^2)', 'ay (m/s^2)','az (m/s^2)','aT (m/s^2)']]
+    Xdf['lastAx'] = Xdf['ax (m/s^2)'].shift(1)
+    Xdf['lastAy'] = Xdf['ay (m/s^2)'].shift(1)
+    Xdf['lastAz'] = Xdf['az (m/s^2)'].shift(1)
+    Xdf['lastAt'] = Xdf['aT (m/s^2)'].shift(1)
+    Xdf['AxAtTminus2'] = Xdf['ax (m/s^2)'].shift(2)
+    Xdf['AyAtTminus2'] = Xdf['ay (m/s^2)'].shift(2)
+    Xdf['AzAtTminus2'] = Xdf['az (m/s^2)'].shift(2)
+    Xdf['AtAtTminus2'] = Xdf['aT (m/s^2)'].shift(2)
+    Xdf = Xdf.dropna();
+    #print(Xdf)
+    #print(data)
+    #print(data.iloc[1:])
+    
+    X = Xdf.values
+    y = data.iloc[LOOKBACK_WINDOW_LENGTH:]['Action'].values
+    #print(X)
+    #print(y)
+    
     X_train, X_valid, y_train, y_valid = train_test_split(X, y)
         
     bayes_model = make_pipeline(
@@ -84,13 +108,13 @@ def main():
 
     ))
 
-    data['prediction'] = knn_model.predict(X);
+    prediction = knn_model.predict(X);
     #print(data[['Action','prediction']])
 
     plt.ylabel("Exercise type")
     plt.xlabel("time")
     #plt.plot(data['time'], data['Action'], 'b.', alpha=0.5)
-    plt.plot(data['time'], data['prediction'], 'b.', alpha=0.5)
+    plt.plot(data['time'].iloc[LOOKBACK_WINDOW_LENGTH:], prediction, 'b.', alpha=0.5)
 
 
 

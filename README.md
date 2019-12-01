@@ -6,8 +6,8 @@ Calorie Counter:
 
 Exercise Clasifier:
 	From inside the /ExcerciseClassifier folder run:
-		python3 1-AnnotateExerciseData.py rawData/data1.csv
-		python3 2-ClassifyExercises.py annotatedData/annotatedData-1.csv
+		python3 1-AnnotateExerciseData.py
+		python3 2-ClassifyExercises.py
 	
 
 
