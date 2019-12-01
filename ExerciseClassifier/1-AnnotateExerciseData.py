@@ -11,30 +11,38 @@ def insertAction(df,start_time, end_time, action):
                                 df['Action'])
     return df
 
-def main(inputFiles):   
-    exercises_df = pd.read_csv(inputFiles)
-    exercises_df['Action'] = 'NONE'
+def main():   
+    mixedExercises1_df = pd.read_csv("rawData/mixedExercises1.csv")
+    mixedExercises1_df['Action'] = 'NONE'
     
-    #exercises_df = insertAction(exercises_df,0.0,6.0,"Putting phone in pocket")
-    exercises_df = insertAction(exercises_df,6.0,12.0,"Walking")
-    exercises_df = insertAction(exercises_df,12.0,31.0,"Squat")
-    exercises_df = insertAction(exercises_df,31.0,37.0,"Stand")
-    exercises_df = insertAction(exercises_df,37.0,49.0,"Walk")
-    #exercises_df = insertAction(exercises_df,49.0,53.0,"WalkingToSitupTransition") #going down for situps
-    exercises_df = insertAction(exercises_df,53.0,72.0,"Situp")
-    #exercises_df = insertAction(exercises_df,72.0,75.0,"Up")
-    #exercises_df = insertAction(exercises_df,75.0,78.0,"Down")
-    exercises_df = insertAction(exercises_df,78.0,89.0,"Pushup")
-    #exercises_df = insertAction(exercises_df,89.0,92.0,"Up")
-    exercises_df = insertAction(exercises_df,92.0,99.0,"Walk")
+    #mixedExercises1_df = insertAction(exercises_df,0.0,6.0,"Putting phone in pocket")
+    mixedExercises1_df = insertAction(mixedExercises1_df,6.0,12.0,"Walking")
+    mixedExercises1_df = insertAction(mixedExercises1_df,12.0,31.0,"Squat")
+    mixedExercises1_df = insertAction(mixedExercises1_df,31.0,37.0,"Stand")
+    mixedExercises1_df = insertAction(mixedExercises1_df,37.0,49.0,"Walk")
+    #mixedExercises1_df = insertAction(mixedExercises1_df,49.0,53.0,"WalkingToSitupTransition") #going down for situps
+    mixedExercises1_df = insertAction(mixedExercises1_df,53.0,72.0,"Situp")
+    #mixedExercises1_df = insertAction(mixedExercises1_df,72.0,75.0,"Up")
+    #mixedExercises1_df = insertAction(mixedExercises1_df,75.0,78.0,"Down")
+    mixedExercises1_df = insertAction(mixedExercises1_df,78.0,89.0,"Pushup")
+    #mixedExercises1_df = insertAction(mixedExercises1_df,89.0,92.0,"Up")
+    mixedExercises1_df = insertAction(mixedExercises1_df,92.0,99.0,"Walk")
     
     
-    #exercises_df = exercises_df[exercises_df['Action']!= 'NA']
+    #process data 
+    #calc deltaTime
+    #mixedExercises1_df['nextTime'] = mixedExercises1_df['time'].shift(-1)
+    #mixedExercises1_df = mixedExercises1_df.dropna();
+    #mixedExercises1_df['deltaTime'] = mixedExercises1_df['nextTime'] - mixedExercises1_df['time']
+    
+    #chop out state transitions and junk data
+    mixedExercises1_df = mixedExercises1_df[mixedExercises1_df['Action']!= 'NONE']
     #print(exercises_df)
     
-    exercises_df.to_csv("annotatedData/annotatedData-1.csv",index=False)
+    
+    mixedExercises1_df.to_csv("annotatedData/annotatedData-1.csv",index=False)
     
 if __name__=='__main__':
-    inputFile = sys.argv[1]
+    #inputFile = sys.argv[1]
     #out_directory = sys.argv[2]
-    main(inputFile)
+    main()
