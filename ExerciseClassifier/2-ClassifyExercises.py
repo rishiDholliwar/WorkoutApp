@@ -25,7 +25,7 @@ OUTPUT_TEMPLATE = (
     'kNN classifier:         {knn:.3f} \n'
     'Rand forest classifier: {rf:.3f} \n'
     'GradientBoostingClassifier: {gbc:.3f} \n'
-    'SVC: {svc:.3f} \n'
+    #'SVC: {svc:.3f} \n'
 )
 
 #used the following guide to test different models
@@ -33,67 +33,66 @@ OUTPUT_TEMPLATE = (
 def main():
     combinedData = pd.read_csv("annotatedData/combinedData.csv")
     
-    #clear data that is not in one of our classes(Is this a good idea?)
+    #clear data that is not in one of our classes(Doing this decreases performance and training time)
     #combinedData = combinedData[combinedData['Action']!= 'NONE']
     
-    #history window to look back at
     #50 samples is about 1/2 a second looking at the data
-    LOOKBACK_WINDOW_LENGTH = 2
+    #set at 0 for disabled, increasing the value seems decrease performance
+    #TODO: figrure out why this does not work
+    PREV_RECORDS_WINDOW_LENGTH = 0
     
- 
     #select data source for training
     data = combinedData
     
-        
-    #TODO: get more data, model may be overfitting
-    #TODO: put in last n records as features as we are classifying motion not single records
-    #TODO: make history data be based off of LOOKBACK_WINDOW_LENGTH 
     Xdf = data[['ax (m/s^2)', 'ay (m/s^2)','az (m/s^2)','aT (m/s^2)']]
-    Xdf['lastAx'] = Xdf['ax (m/s^2)'].shift(1)
-    Xdf['lastAy'] = Xdf['ay (m/s^2)'].shift(1)
-    Xdf['lastAz'] = Xdf['az (m/s^2)'].shift(1)
-    Xdf['lastAt'] = Xdf['aT (m/s^2)'].shift(1)
-    Xdf['AxAtTminus2'] = Xdf['ax (m/s^2)'].shift(2)
-    Xdf['AyAtTminus2'] = Xdf['ay (m/s^2)'].shift(2)
-    Xdf['AzAtTminus2'] = Xdf['az (m/s^2)'].shift(2)
-    Xdf['AtAtTminus2'] = Xdf['aT (m/s^2)'].shift(2)
+    
+    i = 1
+    while i < PREV_RECORDS_WINDOW_LENGTH + 1:
+        Xdf['AxAtTminus'+str(i)] = Xdf['ax (m/s^2)'].shift(i)
+        Xdf['AyAtTminus'+str(i)] = Xdf['ay (m/s^2)'].shift(i)
+        Xdf['AzAtTminus'+str(i)] = Xdf['az (m/s^2)'].shift(i)
+        Xdf['AtAtTminus'+str(i)] = Xdf['aT (m/s^2)'].shift(i)
+        i+=1
+        
+    
     Xdf = Xdf.dropna();
     #print(Xdf)
-    #print(data)
-    #print(data.iloc[1:])
     
     X = Xdf.values
-    y = data.iloc[LOOKBACK_WINDOW_LENGTH:]['Action'].values
+    y = data.iloc[PREV_RECORDS_WINDOW_LENGTH:]['Action'].values
     #print(X)
     #print(y)
     
     X_train, X_valid, y_train, y_valid = train_test_split(X, y)
         
     bayes_model = make_pipeline(
+        StandardScaler(),    
         GaussianNB()
     )
     
     knn_model = make_pipeline(
-        KNeighborsClassifier(n_neighbors=10)
+        StandardScaler(),    
+        KNeighborsClassifier(n_neighbors=2)
     )
     
-
     rf_model = make_pipeline(
+        StandardScaler(),    
         RandomForestClassifier(n_estimators=100, max_depth=3, min_samples_leaf=10)
     )    
     
     gbc_model = make_pipeline(
+        StandardScaler(),    
         GradientBoostingClassifier(n_estimators=50, max_depth=4, min_samples_leaf=0.1)
     )  
  
     svc_model = make_pipeline(
         #optional, knn has around the same score and SVC takes long to train
-        SVC(kernel='rbf', C=2.0,gamma='auto')
+        StandardScaler(),
+        SVC(kernel='linear', C=2.0,gamma='auto')
     )  
-    
-    
+        
     # train models
-    models = [bayes_model, knn_model, rf_model,gbc_model,svc_model]
+    models = [bayes_model, knn_model, rf_model,gbc_model]#,svc_model]
     for i, m in enumerate(models):
         m.fit(X_train, y_train)
         print(m.score(X_train, y_train))
@@ -103,11 +102,13 @@ def main():
         knn=knn_model.score(X_valid, y_valid),
         rf=rf_model.score(X_valid, y_valid),
         gbc=gbc_model.score(X_valid,y_valid),
-        svc=svc_model.score(X_valid,y_valid)
-
+        #svc=svc_model.score(X_valid,y_valid)
     ))
 
-    #prediction = knn_model.predict(X);
+    y_predicted = knn_model.predict(X_valid)
+    from sklearn.metrics import classification_report
+    print("KNN_STATS")
+    print(classification_report(y_valid, y_predicted))
 
 
 if __name__ == '__main__':
