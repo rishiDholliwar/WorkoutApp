@@ -33,7 +33,7 @@ OUTPUT_TEMPLATE = (
 def main():
     combinedData = pd.read_csv("annotatedData/combinedData.csv")
     
-    #clear data that is not in one of our classes(Doing this decreases performance and training time)
+    #clear data that is not in one of our classes
     #combinedData = combinedData[combinedData['Action']!= 'NONE']
     
     #50 samples is about 1/2 a second looking at the data
@@ -82,7 +82,7 @@ def main():
     
     gbc_model = make_pipeline(
         StandardScaler(),    
-        GradientBoostingClassifier(n_estimators=50, max_depth=4, min_samples_leaf=0.1)
+        GradientBoostingClassifier(n_estimators=200, max_depth=7, min_samples_leaf=1)
     )  
  
     svc_model = make_pipeline(
@@ -106,10 +106,40 @@ def main():
     ))
 
     y_predicted = knn_model.predict(X_valid)
+    
     from sklearn.metrics import classification_report
-    print("KNN_STATS")
+    print("KNeighborsClassifier Stats:")
+    print(classification_report(y_valid, y_predicted))
+    
+    y_predicted = gbc_model.predict(X_valid)
+    print("GradientBoostingClassifier Stats:")
     print(classification_report(y_valid, y_predicted))
 
+
+
+    mixedExercises1_df = pd.read_csv("annotatedData/annotated-mixedExercises1.csv")
+        
+    plt.subplot(2, 1, 1)
+    plt.title("Predicted")
+    plt.ylabel("exercise class")
+    plt.xlabel("time")
+    mixed_pred = gbc_model.predict(mixedExercises1_df[['ax (m/s^2)', 'ay (m/s^2)','az (m/s^2)','aT (m/s^2)']])
+    plt.plot(mixedExercises1_df['time'], mixed_pred, 'b.', alpha=0.5)
+    plt.savefig('mixedExercise-Predicted.png')
+    
+    #Used to format plots: https://stackoverflow.com/questions/8248467/matplotlib-tight-layout-doesnt-take-into-account-figure-suptitle/45161551#45161551
+    plt.figure().tight_layout(rect=[0, 0.03, 1, 0.95])
+ 
+    plt.subplot(2, 1, 2)
+    plt.title("Real")
+    plt.ylabel("Real exercise class")
+    plt.xlabel("time")
+    plt.plot(mixedExercises1_df['time'], mixedExercises1_df['Action'], 'b.', alpha=0.5)
+    plt.savefig('mixedExercise-Real.png')
+    
+    
+    print("MixedExercise Prediction Stats:")
+    print(classification_report(mixedExercises1_df['Action'], mixed_pred))
 
 if __name__ == '__main__':
     main()
