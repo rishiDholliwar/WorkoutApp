@@ -1,8 +1,10 @@
 # CMPT 353 Project: Workout Application
 
 ### Example Usuage:
-Calorie Counter:
-	python3 workout_app.py test-data/workout2.csv
+Workout Analyzer:
+
+    cd WorkoutAnalyzer
+	python3 workout_app.py workoutData/workout6.csv 90
 
 Exercise Clasifier:
 	From inside the /ExcerciseClassifier folder run:
