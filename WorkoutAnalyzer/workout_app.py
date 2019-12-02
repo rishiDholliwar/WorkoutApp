@@ -99,6 +99,7 @@ def print_workout_stats(workout_actions, elapsed_time, weightKG):
     plt.pie(workout.values(),  labels=workout.keys(), autopct='%1.1f%%',
         shadow=True, startangle=90)
     plt.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
+    plt.show()
    
 
 """
