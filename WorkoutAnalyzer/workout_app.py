@@ -93,13 +93,8 @@ def print_workout_stats(workout_actions, elapsed_time, weightKG):
     print(" - Duration: " , workout_time + "\n - Calories Burned: ", round(total_cal_burned,2),"\n")
     print("Workout Breakdown:")
     print(workout_breakdown)
+    return workout
     
-    plt.figure()
-    plt.title("Workout Breakdown")
-    plt.pie(workout.values(),  labels=workout.keys(), autopct='%1.1f%%',
-        shadow=True, startangle=90)
-    plt.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
-    plt.show()
    
 
 """
@@ -174,8 +169,15 @@ def main(exercise_labelled, workout, weightKG):
     duration_action = 2 #This is the number of seconds we look at each increment of the workout
     workout_actions = get_workout_actions(duration_action, workout_df, model)
     elapsed_time = workout_df["time"].iloc[-1] 
-    print_workout_stats(workout_actions, elapsed_time, weightKG)
+    workout = print_workout_stats(workout_actions, elapsed_time, weightKG)
     print_timeline(workout_actions, duration_action, elapsed_time)
+    
+    plt.figure()
+    plt.title("Workout Breakdown")
+    plt.pie(workout.values(),  labels=workout.keys(), autopct='%1.1f%%',
+        shadow=True, startangle=90)
+    plt.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
+    plt.show()
     
 
 if __name__=='__main__':
