@@ -26,10 +26,10 @@ def main():
     mixedExercises1_df = insertAction(mixedExercises1_df,78.0,89.0,"Pushup")
     mixedExercises1_df = insertAction(mixedExercises1_df,92.0,99.0,"Walk")
     #Smooth data
-    mixedExercises1_df['ax (m/s^2)'] = lowess(mixedExercises1_df['ax (m/s^2)'],mixedExercises1_df['time'], frac=0.1)
-    mixedExercises1_df['ay (m/s^2)'] = lowess(mixedExercises1_df['ay (m/s^2)'],mixedExercises1_df['time'], frac=0.1)
-    mixedExercises1_df['az (m/s^2)'] = lowess(mixedExercises1_df['az (m/s^2)'],mixedExercises1_df['time'], frac=0.1)
-    mixedExercises1_df['aT (m/s^2)'] = lowess(mixedExercises1_df['aT (m/s^2)'],mixedExercises1_df['time'], frac=0.1) 
+   # mixedExercises1_df['ax (m/s^2)'] = lowess(mixedExercises1_df['ax (m/s^2)'],mixedExercises1_df['time'], frac=0.1)
+    #mixedExercises1_df['ay (m/s^2)'] = lowess(mixedExercises1_df['ay (m/s^2)'],mixedExercises1_df['time'], frac=0.1)
+    #mixedExercises1_df['az (m/s^2)'] = lowess(mixedExercises1_df['az (m/s^2)'],mixedExercises1_df['time'], frac=0.1)
+    #mixedExercises1_df['aT (m/s^2)'] = lowess(mixedExercises1_df['aT (m/s^2)'],mixedExercises1_df['time'], frac=0.1) 
     #plot smoothed line
     #plt.ylabel("aT (m/s^2)")
     #plt.xlabel("time (s)")
@@ -44,10 +44,10 @@ def main():
     pushup1_df['Action'] = 'NONE'       
     pushup1_df = insertAction(pushup1_df,10.0,30.0,"Pushup")
     #Smooth data
-    pushup1_df['ax (m/s^2)'] = lowess(pushup1_df['ax (m/s^2)'],pushup1_df['time'], frac=0.1)
-    pushup1_df['ay (m/s^2)'] = lowess(pushup1_df['ay (m/s^2)'],pushup1_df['time'], frac=0.1)
-    pushup1_df['az (m/s^2)'] = lowess(pushup1_df['az (m/s^2)'],pushup1_df['time'], frac=0.1)
-    pushup1_df['aT (m/s^2)'] = lowess(pushup1_df['aT (m/s^2)'],pushup1_df['time'], frac=0.1)     
+    #pushup1_df['ax (m/s^2)'] = lowess(pushup1_df['ax (m/s^2)'],pushup1_df['time'], frac=0.1)
+    #pushup1_df['ay (m/s^2)'] = lowess(pushup1_df['ay (m/s^2)'],pushup1_df['time'], frac=0.1)
+    #pushup1_df['az (m/s^2)'] = lowess(pushup1_df['az (m/s^2)'],pushup1_df['time'], frac=0.1)
+    #pushup1_df['aT (m/s^2)'] = lowess(pushup1_df['aT (m/s^2)'],pushup1_df['time'], frac=0.1)     
     
     
     
@@ -56,10 +56,10 @@ def main():
     squat1_df['Action'] = 'NONE'       
     squat1_df = insertAction(pushup1_df,10.0,60.0,"Pushup")
     #Smooth data
-    squat1_df['ax (m/s^2)'] = lowess(squat1_df['ax (m/s^2)'],squat1_df['time'], frac=0.1)
-    squat1_df['ay (m/s^2)'] = lowess(squat1_df['ay (m/s^2)'],squat1_df['time'], frac=0.1)
-    squat1_df['az (m/s^2)'] = lowess(squat1_df['az (m/s^2)'],squat1_df['time'], frac=0.1)
-    squat1_df['aT (m/s^2)'] = lowess(squat1_df['aT (m/s^2)'],squat1_df['time'], frac=0.1)      
+    #squat1_df['ax (m/s^2)'] = lowess(squat1_df['ax (m/s^2)'],squat1_df['time'], frac=0.1)
+    #squat1_df['ay (m/s^2)'] = lowess(squat1_df['ay (m/s^2)'],squat1_df['time'], frac=0.1)
+    #squat1_df['az (m/s^2)'] = lowess(squat1_df['az (m/s^2)'],squat1_df['time'], frac=0.1)
+    #squat1_df['aT (m/s^2)'] = lowess(squat1_df['aT (m/s^2)'],squat1_df['time'], frac=0.1)      
     
     
     

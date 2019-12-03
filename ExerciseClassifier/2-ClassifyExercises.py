@@ -23,8 +23,8 @@ import time
 OUTPUT_TEMPLATE = (
     'Bayesian classifier:    {bayes:.3f} \n'
     'kNN classifier:         {knn:.3f} \n'
-    'Rand forest classifier: {rf:.3f} \n'
-    'GradientBoostingClassifier: {gbc:.3f} \n'
+    #'Rand forest classifier: {rf:.3f} \n'
+   # 'GradientBoostingClassifier: {gbc:.3f} \n'
     #'SVC: {svc:.3f} \n'
 )
 
@@ -37,15 +37,12 @@ def main():
     #combinedData = combinedData[combinedData['Action']!= 'NONE']
     
     #50 samples is about 1/2 a second looking at the data
-    #set at 0 for disabled, increasing the value seems decrease performance
-    #TODO: figrure out why this does not work
-    PREV_RECORDS_WINDOW_LENGTH = 0
+    PREV_RECORDS_WINDOW_LENGTH = 10
     
     #select data source for training
     data = combinedData
     
     Xdf = data[['ax (m/s^2)', 'ay (m/s^2)','az (m/s^2)','aT (m/s^2)']]
-    
     i = 1
     while i < PREV_RECORDS_WINDOW_LENGTH + 1:
         Xdf['AxAtTminus'+str(i)] = Xdf['ax (m/s^2)'].shift(i)
@@ -54,7 +51,6 @@ def main():
         Xdf['AtAtTminus'+str(i)] = Xdf['aT (m/s^2)'].shift(i)
         i+=1
         
-    
     Xdf = Xdf.dropna();
     #print(Xdf)
     
@@ -92,7 +88,7 @@ def main():
     )  
         
     # train models
-    models = [bayes_model, knn_model, rf_model,gbc_model]#,svc_model]
+    models = [bayes_model, knn_model]#, rf_model,gbc_model]#,svc_model]
     for i, m in enumerate(models):
         m.fit(X_train, y_train)
         print(m.score(X_train, y_train))
@@ -100,8 +96,8 @@ def main():
     print(OUTPUT_TEMPLATE.format(
         bayes=bayes_model.score(X_valid, y_valid),
         knn=knn_model.score(X_valid, y_valid),
-        rf=rf_model.score(X_valid, y_valid),
-        gbc=gbc_model.score(X_valid,y_valid),
+       # rf=rf_model.score(X_valid, y_valid),
+        #gbc=gbc_model.score(X_valid,y_valid),
         #svc=svc_model.score(X_valid,y_valid)
     ))
 
@@ -111,20 +107,34 @@ def main():
     print("KNeighborsClassifier Stats:")
     print(classification_report(y_valid, y_predicted))
     
-    y_predicted = gbc_model.predict(X_valid)
-    print("GradientBoostingClassifier Stats:")
-    print(classification_report(y_valid, y_predicted))
-
+    #y_predicted = gbc_model.predict(X_valid)
+    #print("GradientBoostingClassifier Stats:")
+    #print(classification_report(y_valid, y_predicted))
 
 
     mixedExercises1_df = pd.read_csv("annotatedData/annotated-mixedExercises1.csv")
+    
+    mixedDf =  mixedExercises1_df[['ax (m/s^2)', 'ay (m/s^2)','az (m/s^2)','aT (m/s^2)']]
+    i2 = 1
+    while i2 < PREV_RECORDS_WINDOW_LENGTH + 1:
+        mixedDf['AxAtTminus'+str(i2)] = mixedDf['ax (m/s^2)'].shift(i)
+        mixedDf['AyAtTminus'+str(i2)] = mixedDf['ay (m/s^2)'].shift(i)
+        mixedDf['AzAtTminus'+str(i2)] = mixedDf['az (m/s^2)'].shift(i)
+        mixedDf['AtAtTminus'+str(i2)] = mixedDf['aT (m/s^2)'].shift(i)
+        i2+=1
+    
+    mixedDf = mixedDf.dropna();    
         
+    mixed_pred = knn_model.predict(mixedDf)
+    print("MixedExercise Prediction Stats:")
+    print(classification_report(mixedExercises1_df['Action'][1:], mixed_pred))
+   
+    
     plt.subplot(2, 1, 1)
     plt.title("Predicted")
     plt.ylabel("exercise class")
     plt.xlabel("time")
-    mixed_pred = gbc_model.predict(mixedExercises1_df[['ax (m/s^2)', 'ay (m/s^2)','az (m/s^2)','aT (m/s^2)']])
-    plt.plot(mixedExercises1_df['time'], mixed_pred, 'b.', alpha=0.5)
+    plt.plot(mixedExercises1_df['time'][1:],mixed_pred, 'b.', alpha=0.5)
     plt.savefig('mixedExercise-Predicted.png')
     
     #Used to format plots: https://stackoverflow.com/questions/8248467/matplotlib-tight-layout-doesnt-take-into-account-figure-suptitle/45161551#45161551
@@ -134,12 +144,9 @@ def main():
     plt.title("Real")
     plt.ylabel("Real exercise class")
     plt.xlabel("time")
-    plt.plot(mixedExercises1_df['time'], mixedExercises1_df['Action'], 'b.', alpha=0.5)
+    plt.plot(mixedExercises1_df['time'][1:],mixedExercises1_df['Action'][1:], 'b.', alpha=0.5)
     plt.savefig('mixedExercise-Real.png')
     
-    
-    print("MixedExercise Prediction Stats:")
-    print(classification_report(mixedExercises1_df['Action'], mixed_pred))
 
 if __name__ == '__main__':
     main()
